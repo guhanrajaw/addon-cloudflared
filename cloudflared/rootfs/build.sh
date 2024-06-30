@@ -30,6 +30,18 @@ wget -O /usr/bin/cloudflared "https://github.com/cloudflare/cloudflared/releases
 # Make the downloaded bin executeable
 chmod +x /usr/bin/cloudflared
 
+apk add iptables
+iptables -F
+iptables -A OUTPUT -d 192.168.0.111 -p tcp --dport 8099 -j ACCEPT
+iptables -A OUTPUT -d 192.168.0.111 -p tcp --sport 8099 -j ACCEPT
+iptables -A INPUT -s 192.168.0.111 -p tcp --dport 8099 -j ACCEPT
+iptables -A INPUT -s 192.168.0.111 -p tcp --sport 8099 -j ACCEPT
+
+iptables -A OUTPUT -d 192.168.0.0/24 -j DROP
+iptables -A OUTPUT -d 172.30.33.0/24 -j DROP
+iptables -A INPUT -s 192.168.0.0/24 -j DROP
+iptables -A INPUT -s 172.30.33.0/24 -j DROP
+
 # Remove legacy cont-init.d services
 rm -rf /etc/cont-init.d
 
